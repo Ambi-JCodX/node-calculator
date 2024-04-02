@@ -1,8 +1,5 @@
-var rs = require('readline-sync');
-
-let num1 = 0;
-let num2 = 0;
-
+const rs = require('readline-sync');
+const arrOperators = ['+', '-', '*', '/'];
 
 function calculate(num1, num2, operation) {
   switch (operation) {
@@ -16,38 +13,42 @@ function calculate(num1, num2, operation) {
       if (num2 !== 0) {
         return num1 / num2;
       } else {
-        return 'Division by zero is not allowed';
+        console.log('Division by zero is not allowed');
       }
     default:
       return 'Invalid Operation';
   };
 };
 
-while (true) {
- let operator = rs.question('What operation would you like to perform? ');
-  if (operator === '+'
-  || operator === '-'
-  || operator === '*'
-  || operator === '/') {
-
-    do {
-      num1 = rs.question('Please enter the first number: ');
-      if (isNaN(num1)) {
-        console.log('This is not a number');
-      };
-    } while (isNaN(num1));
-    do {
-      num2 = rs.question('Please enter the second number: ');
-      if (isNaN(num2)) {
-        console.log('This is not a number');
-      };
-    } while (isNaN(num2));
-
-    let result = calculate(Number(num1), Number(num2), operator);
-    console.log(`The result is: ${result}`);
-    
-    break;
-  } else {
-    console.log('This is not a valid operation');
-  };
+const getOperation = (limit) => {
+  return rs.question('What operation would you like to perform? ', {
+      limit : limit,
+      limitMessage:'This is not a valid operation!',
+    });
 };
+
+const giveNum = (order, isDivision = false) => {
+  const num = rs.questionInt(`Please enter the ${order} number: `, {
+      limitMessage: 'This is not a number!'
+    });
+    if (order === 'second' && isDivision && num === 0) {
+      return giveNum(order, isDivision);
+    }
+    
+    return num;
+};
+
+const calculator = (opList) => {
+  const operator = getOperation(opList);
+  const [firstNum, secondNum] = ['first','second'].map((item) => {
+    if (operator === '/' && item === 'second') {
+      return giveNum(item, true);
+    } else {
+      return giveNum(item);
+    }
+  });
+  let result = calculate(firstNum, secondNum, operator);
+  console.log(`The result is: ${result}`);
+};
+
+calculator(arrOperators);
