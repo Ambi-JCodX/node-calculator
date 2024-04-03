@@ -10,11 +10,7 @@ function calculate(num1, num2, operation) {
     case '*':
       return num1 * num2;
     case '/':
-      if (num2 !== 0) {
         return num1 / num2;
-      } else {
-        console.log('Division by zero is not allowed');
-      }
     default:
       return 'Invalid Operation';
   };
@@ -29,18 +25,23 @@ const getOperation = (limit) => {
 
 const giveNum = (order, isDivision = false) => {
   const num = rs.questionInt(`Please enter the ${order} number: `, {
+      limit: /[0-9]/,
       limitMessage: 'This is not a number!'
     });
     if (order === 'second' && isDivision && num === 0) {
+      console.log(`The division with 0 won\'t work!`);
       return giveNum(order, isDivision);
     }
     
-    return num;
+    return +num; /**
+    * ? +num is exactly the same as Number(num),
+    * ! Even though we don't really need it because we are using the ".questionInt" which accept only integer as a input.
+    */ 
 };
 
 const calculator = (opList) => {
   const operator = getOperation(opList);
-  const [firstNum, secondNum] = ['first','second'].map((item) => {
+  const [firstNum, secondNum] = ['first', 'second'].map(item => {
     if (operator === '/' && item === 'second') {
       return giveNum(item, true);
     } else {
